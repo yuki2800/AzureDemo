@@ -1,0 +1,79 @@
+name: Build and Deploy ASP.NET Core + Blazor to Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AZURE_APPSERVICE_NAME: 'AppService-yuki2800-dev' # App Serviceの名称に変更
+  DOTNET_VERSION: '10.0.x'                     # プロジェクトの net10.0 に合わせる
+  API_TARGET_PATH: 'site\wwwroot\api-app'      # Azure側パスマッピングの物理パスと一致させる
+
+permissions:
+  id-token: write # azure/login (OIDC) に必要
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest # AzureがWindowsなのでビルド環境もWindowsを指定
+
+    steps:
+    # 1. リポジトリのコードをチェックアウト
+    - name: Checkout GitHub Action
+      uses: actions/checkout@v4
+
+    # 2. .NET SDK のセットアップ
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    # 3. frontend (Blazor WASM) のビルド・publish → App Serviceのルートに配置
+    - name: Publish frontend (Blazor WASM)
+      run: |
+        dotnet restore src/frontend/InventoryManagement.Web.csproj
+        dotnet publish src/frontend/InventoryManagement.Web.csproj -c Release -o ${{ runner.temp }}/frontend
+
+    # 4. backend (Web API) のビルド・publish → App Serviceの /api サブアプリケーションに配置
+    - name: Publish backend (Web API)
+      run: |
+        dotnet restore src/backend/InventoryManagement.Api.csproj
+        dotnet publish src/backend/InventoryManagement.Api.csproj -c Release -o ${{ runner.temp }}/backend
+
+    # 5. デプロイ用に成果物をZIP化（frontendはwwwroot配下のpublish出力のみ、backendはpublish出力全体）
+    - name: Zip artifacts
+      run: |
+        Compress-Archive -Path "${{ runner.temp }}/frontend/wwwroot/*" -DestinationPath "${{ runner.temp }}/frontend.zip"
+        Compress-Archive -Path "${{ runner.temp }}/backend/*" -DestinationPath "${{ runner.temp }}/backend.zip"
+
+    # 6. Azure へログイン（federated credentialによるOIDC認証）
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    # 7. frontend を App Service のルート（site\wwwroot）へデプロイ
+    - name: Deploy frontend to App Service root
+      run: |
+        az webapp deploy `
+          --name ${{ env.AZURE_APPSERVICE_NAME }} `
+          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} `
+          --src-path "${{ runner.temp }}/frontend.zip" `
+          --type zip
+
+    # 8. backend を /api 仮想アプリケーション（site\wwwroot\api-app）へデプロイ
+    - name: Deploy backend to /api virtual application
+      run: |
+        az webapp deploy `
+          --name ${{ env.AZURE_APPSERVICE_NAME }} `
+          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} `
+          --src-path "${{ runner.temp }}/backend.zip" `
+          --type zip `
+          --target-path "${{ env.API_TARGET_PATH }}"
+
+    - name: Azure Logout
+      if: always()
+      run: az logout
