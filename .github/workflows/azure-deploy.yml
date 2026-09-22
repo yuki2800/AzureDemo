@@ -44,7 +44,7 @@ jobs:
     # 5. デプロイ用に成果物をZIP化（frontendはwwwroot配下のpublish出力のみ、backendはpublish出力全体）
     - name: Zip artifacts
       run: |
-        Compress-Archive -Path "${{ runner.temp }}/frontend/wwwroot/*" -DestinationPath "${{ runner.temp }}/frontend.zip"
+        Compress-Archive -Path "${{ runner.temp }}/frontend/*" -DestinationPath "${{ runner.temp }}/frontend.zip"
         Compress-Archive -Path "${{ runner.temp }}/backend/*" -DestinationPath "${{ runner.temp }}/backend.zip"
 
     # 6. Azure へログイン（federated credentialによるOIDC認証）
