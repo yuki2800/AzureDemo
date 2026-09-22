@@ -73,7 +73,7 @@ jobs:
           --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} `
           --src-path "${{ runner.temp }}/backend.zip" `
           --type zip `
-          --target-path "${{ env.API_TARGET_PATH }}"
+          --target-path "${{ env.API_TARGET_PATH }}" `
           --clean false
 
     - name: Azure Logout
