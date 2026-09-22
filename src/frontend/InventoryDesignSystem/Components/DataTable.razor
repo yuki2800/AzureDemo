@@ -1,0 +1,126 @@
+@namespace InventoryDesignSystem.Components
+
+<div class="table-container">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <h3 class="table-title">@Title</h3>
+    }
+    <table class="table">
+        <thead>
+            <tr>
+                @foreach (var column in Columns)
+                {
+                    <th style="@GetColumnStyle(column)">@column.Header</th>
+                }
+                @if (ShowActions)
+                {
+                    <th>操作</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (Rows == null || Rows.Count == 0)
+            {
+                <tr>
+                    <td colspan="@(Columns.Count + (ShowActions ? 1 : 0))" style="text-align: center; padding: 24px;">
+                        <span class="text-muted">データがありません</span>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var row in Rows)
+                {
+                    <tr>
+                        @foreach (var column in Columns)
+                        {
+                            <td style="@GetColumnStyle(column)">
+                                @if (row.ContainsKey(column.FieldName))
+                                {
+                                    @if (row[column.FieldName] is RenderFragment fragment)
+                                    {
+                                        @fragment
+                                    }
+                                    else
+                                    {
+                                        @row[column.FieldName]
+                                    }
+                                }
+                            </td>
+                        }
+                        @if (ShowActions)
+                        {
+                            <td>
+                                @if (OnRowAction.HasDelegate)
+                                {
+                                    <button class="btn btn-secondary btn-sm" 
+                                            @onclick="() => OnRowAction.InvokeAsync(row)">
+                                        編集
+                                    </button>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .table-container {
+        overflow-x: auto;
+        margin: var(--spacing-lg) 0;
+    }
+
+    .table-title {
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-semibold);
+        margin-bottom: var(--spacing-md);
+        color: var(--color-text-primary);
+    }
+
+    .btn-sm {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+</style>
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public List<DataColumn> Columns { get; set; } = new();
+
+    [Parameter]
+    public List<Dictionary<string, object>> Rows { get; set; } = new();
+
+    [Parameter]
+    public bool ShowActions { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<Dictionary<string, object>> OnRowAction { get; set; }
+
+    private string GetColumnStyle(DataColumn column)
+    {
+        var style = "";
+        if (column.Width.HasValue)
+        {
+            style += $"width: {column.Width}%;";
+        }
+        if (!string.IsNullOrEmpty(column.TextAlign))
+        {
+            style += $"text-align: {column.TextAlign};";
+        }
+        return style;
+    }
+
+    public class DataColumn
+    {
+        public string Header { get; set; } = "";
+        public string FieldName { get; set; } = "";
+        public int? Width { get; set; }
+        public string? TextAlign { get; set; } = "left";
+    }
+}

@@ -1,0 +1,133 @@
+@namespace InventoryManagement.Web.U002_StockManagement
+@page "/stocks/transactions/register"
+@using InventoryManagement.Web.U001_ProductManagement.Models
+@using InventoryManagement.Web.U001_ProductManagement.Services
+@using InventoryManagement.Web.U002_StockManagement.Models
+@using InventoryManagement.Web.U002_StockManagement.Services
+@inject ProductApiClient ProductApiClient
+@inject StockApiClient StockApiClient
+@inject NavigationManager NavigationManager
+
+<div class="page-header">
+    <h1>入出庫登録</h1>
+</div>
+
+<SelectDropdown Label="商品"
+                Placeholder="商品を選択してください"
+                SelectedValue="@_selectedProductId"
+                SelectedValueChanged="@((v) => _selectedProductId = v)"
+                Options="@_productOptions" />
+
+<SelectDropdown Label="入出庫区分"
+                SelectedValue="@_transactionType"
+                SelectedValueChanged="@((v) => _transactionType = v)"
+                Options="@_transactionTypeOptions" />
+
+<NumberInput Label="数量（kg）"
+             Value="@_quantity"
+             ValueChanged="@OnQuantityChanged"
+             Min="0"
+             Step="0.001m"
+             ErrorMessage="@_quantityError"
+             HelperText="0より大きい値を、小数点以下3桁で入力してください" />
+
+@if (_errorMessage is not null)
+{
+    <p class="text-error">@_errorMessage</p>
+}
+
+<Button Text="登録" Variant="primary" OnClick="@RegisterAsync" IsDisabled="@_isSubmitting" />
+
+@code {
+    private readonly List<SelectDropdown.SelectOption> _transactionTypeOptions = new()
+    {
+        new SelectDropdown.SelectOption { Label = "入庫", Value = "IN" },
+        new SelectDropdown.SelectOption { Label = "出庫", Value = "OUT" },
+    };
+
+    private List<SelectDropdown.SelectOption> _productOptions = new();
+    private string _selectedProductId = "";
+    private string _transactionType = "IN";
+    private decimal _quantity;
+    private string? _quantityError;
+    private string? _errorMessage;
+    private bool _isSubmitting;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await ProductApiClient.GetProductsAsync();
+        if (result.IsSuccess)
+        {
+            _productOptions = (result.Value ?? new List<ProductDto>())
+                .Select(x => new SelectDropdown.SelectOption { Label = $"{x.ProductCode} {x.ProductName}", Value = x.ProductId.ToString() })
+                .ToList();
+        }
+        else
+        {
+            _errorMessage = result.ErrorMessage;
+        }
+    }
+
+    private void OnQuantityChanged(decimal value)
+    {
+        _quantity = value;
+        _quantityError = ValidateQuantity(value);
+    }
+
+    private static string? ValidateQuantity(decimal value)
+    {
+        if (value <= 0)
+        {
+            return "数量は0より大きい値を入力してください。";
+        }
+
+        if (Math.Round(value, 3) != value)
+        {
+            return "数量は小数点以下3桁までで入力してください。";
+        }
+
+        return null;
+    }
+
+    private async Task RegisterAsync()
+    {
+        _errorMessage = null;
+        _quantityError = ValidateQuantity(_quantity);
+
+        if (!int.TryParse(_selectedProductId, out var productId))
+        {
+            _errorMessage = "商品を選択してください。";
+            return;
+        }
+
+        if (_quantityError is not null)
+        {
+            return;
+        }
+
+        _isSubmitting = true;
+        try
+        {
+            var request = new StockTransactionRequest
+            {
+                ProductId = productId,
+                TransactionType = _transactionType,
+                Quantity = _quantity,
+            };
+
+            var result = await StockApiClient.RegisterStockTransactionAsync(request);
+            if (result.IsSuccess)
+            {
+                NavigationManager.NavigateTo("/stocks");
+            }
+            else
+            {
+                _errorMessage = result.ErrorMessage;
+            }
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

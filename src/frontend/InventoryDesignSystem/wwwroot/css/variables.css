@@ -1,0 +1,106 @@
+/* =====================================
+   デザインシステム - デザイントークン
+   企業カラー・タイポグラフィ定義
+   ===================================== */
+
+:root {
+    /* === プライマリカラー（コーポレートカラー：エメラルドグリーン） === */
+    --color-primary: #00A99D; /* エメラルドグリーン */
+    --color-primary-dark: #00817A; /* 濃いエメラルドグリーン */
+    --color-primary-light: #5FCFC4; /* 明るいエメラルドグリーン */
+    /* === ニュートラルカラー === */
+    --color-neutral-900: #1F2937; /* 濃いグレー */
+    --color-neutral-800: #374151;
+    --color-neutral-700: #4B5563;
+    --color-neutral-600: #6B7280;
+    --color-neutral-500: #9CA3AF; /* グレー */
+    --color-neutral-400: #D1D5DB;
+    --color-neutral-300: #E5E7EB;
+    --color-neutral-200: #F3F4F6;
+    --color-neutral-100: #F9FAFB; /* 薄いグレー */
+    --color-neutral-50: #FAFBFC; /* ほぼ白 */
+    /* === ステータスカラー（在庫管理用） === */
+    --color-success: #107C10; /* 緑：在庫充分 */
+    --color-warning: #FFB900; /* ゴールド：在庫少 */
+    --color-error: #DA3B01; /* オレンジレッド：在庫切れ */
+    --color-info: #00A99D; /* エメラルドグリーン：情報 */
+    /* === テキストカラー === */
+    --color-text-primary: #1F2937; /* 主要テキスト */
+    --color-text-secondary: #6B7280; /* 補助テキスト */
+    --color-text-disabled: #D1D5DB; /* 無効テキスト */
+    --color-text-inverse: #FFFFFF; /* 反転テキスト */
+    /* === ボーダーカラー === */
+    --color-border: #D1D5DB;
+    --color-border-dark: #9CA3AF;
+    /* === 背景カラー === */
+    --color-bg-primary: #FFFFFF;
+    --color-bg-secondary: #F9FAFB;
+    --color-bg-tertiary: #F3F4F6;
+    /* === タイポグラフィ === */
+    /* フォントファミリー - SharePoint/Office風 */
+    --font-family-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'BIZ UDPGothic', 'Yu Gothic UI', 'Hiragino Sans', sans-serif;
+    --font-family-mono: 'Courier New', Courier, monospace;
+    /* フォントサイズ */
+    --font-size-xs: 12px;
+    --font-size-sm: 13px;
+    --font-size-base: 14px; /* デフォルト */
+    --font-size-lg: 16px;
+    --font-size-xl: 18px;
+    --font-size-2xl: 20px;
+    --font-size-3xl: 24px;
+    --font-size-4xl: 28px;
+    /* フォントウェイト */
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    /* 行高 */
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+    /* === スペーシング === */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+    --spacing-2xl: 32px;
+    --spacing-3xl: 48px;
+    /* === ボーダー・角丸 === */
+    --border-radius-xs: 2px;
+    --border-radius-sm: 4px;
+    --border-radius-md: 6px;
+    --border-radius-lg: 8px;
+    --border-radius-full: 9999px;
+    --border-width-thin: 1px;
+    --border-width-normal: 2px;
+    /* === シャドウ === */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    /* === トランジション === */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+    /* === Z-Index === */
+    --z-dropdown: 1000;
+    --z-modal: 1050;
+    --z-tooltip: 1100;
+}
+
+/* =====================================
+   ダークモード対応（将来用） 
+   ===================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-text-primary: #F5F5F5;
+    --color-text-secondary: #BDBDBD;
+    --color-text-disabled: #616161;
+    --color-bg-primary: #121212;
+    --color-bg-secondary: #212121;
+    --color-bg-tertiary: #2E2E2E;
+    --color-border: #424242;
+  }
+}

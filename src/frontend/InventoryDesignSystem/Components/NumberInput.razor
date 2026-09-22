@@ -1,0 +1,79 @@
+@namespace InventoryDesignSystem.Components
+@using System.Globalization
+
+<div class="form-group">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label for="@Id">@Label</label>
+    }
+    <input type="number" 
+           id="@Id"
+           class="@CssClass"
+           placeholder="@Placeholder"
+           value="@Value.ToString(CultureInfo.InvariantCulture)"
+           min="@Min.ToString(CultureInfo.InvariantCulture)"
+           max="@Max?.ToString(CultureInfo.InvariantCulture)"
+           step="@Step.ToString(CultureInfo.InvariantCulture)"
+           disabled="@IsDisabled"
+           @oninput="OnValueChanged" />
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <small class="text-error">@ErrorMessage</small>
+    }
+    else if (!string.IsNullOrEmpty(HelperText))
+    {
+        <small class="text-muted">@HelperText</small>
+    }
+</div>
+
+@code {
+    private static int _idCounter = 0;
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    [Parameter]
+    public decimal Value { get; set; } = 0m;
+
+    [Parameter]
+    public EventCallback<decimal> ValueChanged { get; set; }
+
+    [Parameter]
+    public decimal Min { get; set; } = 0m;
+
+    [Parameter]
+    public decimal? Max { get; set; }
+
+    [Parameter]
+    public decimal Step { get; set; } = 1m;
+
+    [Parameter]
+    public bool IsDisabled { get; set; } = false;
+
+    [Parameter]
+    public string? HelperText { get; set; }
+
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+
+    [Parameter]
+    public string? AdditionalClass { get; set; }
+
+    private string Id { get; } = $"number-input-{++_idCounter}";
+
+    private string CssClass => string.IsNullOrEmpty(ErrorMessage)
+        ? $"form-input {AdditionalClass}"
+        : $"form-input is-invalid {AdditionalClass}";
+
+    private async Task OnValueChanged(ChangeEventArgs e)
+    {
+        if (decimal.TryParse(e.Value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture, out var result))
+        {
+            Value = result;
+            await ValueChanged.InvokeAsync(Value);
+        }
+    }
+}

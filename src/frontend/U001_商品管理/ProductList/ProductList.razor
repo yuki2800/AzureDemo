@@ -1,0 +1,60 @@
+@namespace InventoryManagement.Web.U001_ProductManagement
+@page "/products"
+@using InventoryManagement.Web.U001_ProductManagement.Models
+@using InventoryManagement.Web.U001_ProductManagement.Services
+@inject ProductApiClient ProductApiClient
+
+<div class="page-header">
+    <h1>商品一覧</h1>
+</div>
+
+<TextInput Label="絞り込み"
+           Placeholder="商品コードまたは商品名で絞り込み"
+           Value="@_filterText"
+           ValueChanged="@((v) => _filterText = v)" />
+
+@if (_errorMessage is not null)
+{
+    <p class="text-error">@_errorMessage</p>
+}
+
+<DataTable Columns="@_columns" Rows="@FilteredRows" />
+
+@code {
+    private readonly List<DataTable.DataColumn> _columns = new()
+    {
+        new DataTable.DataColumn { Header = "商品コード", FieldName = "ProductCode" },
+        new DataTable.DataColumn { Header = "商品名", FieldName = "ProductName" },
+        new DataTable.DataColumn { Header = "単価（円/kg）", FieldName = "UnitPrice", TextAlign = "right" },
+    };
+
+    private List<ProductDto> _products = new();
+    private string _filterText = "";
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await ProductApiClient.GetProductsAsync();
+        if (result.IsSuccess)
+        {
+            _products = result.Value ?? new List<ProductDto>();
+        }
+        else
+        {
+            _errorMessage = result.ErrorMessage;
+        }
+    }
+
+    private List<Dictionary<string, object>> FilteredRows =>
+        _products
+            .Where(x => string.IsNullOrEmpty(_filterText)
+                || x.ProductCode.Contains(_filterText, StringComparison.OrdinalIgnoreCase)
+                || x.ProductName.Contains(_filterText, StringComparison.OrdinalIgnoreCase))
+            .Select(x => new Dictionary<string, object>
+            {
+                ["ProductCode"] = x.ProductCode,
+                ["ProductName"] = x.ProductName,
+                ["UnitPrice"] = x.UnitPrice.ToString("N2"),
+            })
+            .ToList();
+}

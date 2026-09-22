@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="backend/InventoryManagement.Api.csproj" />
+  <Project Path="frontend/InventoryDesignSystem/InventoryDesignSystem.csproj" />
+  <Project Path="frontend/InventoryManagement.Web.csproj" />
+</Solution>

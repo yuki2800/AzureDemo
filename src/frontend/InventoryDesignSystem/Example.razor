@@ -1,0 +1,565 @@
+@page "/example"
+@using InventoryDesignSystem.Components
+
+<!-- ナビゲーションバー -->
+<nav class="navbar">
+    <div class="navbar-container">
+        <div class="navbar-header">
+            <div class="navbar-logo">📦</div>
+            <div class="navbar-title">インベントリ管理システム</div>
+        </div>
+        <div class="navbar-menu">
+            <a href="#" class="navbar-menu-item active">ホーム</a>
+            <a href="#" class="navbar-menu-item">商品管理</a>
+            <a href="#" class="navbar-menu-item">レポート</a>
+            <a href="#" class="navbar-menu-item">設定</a>
+        </div>
+        <div class="navbar-user">
+            <div class="user-avatar">U</div>
+        </div>
+    </div>
+</nav>
+
+<!-- メインコンテンツ -->
+<div class="main-layout">
+    <!-- サイドバー -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3>フィルタ</h3>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <h4>カテゴリ</h4>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" checked />
+                        <span>金属製品</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" />
+                        <span>電子部品</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" />
+                        <span>化学品</span>
+                    </label>
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <h4>在庫状況</h4>
+                <div class="radio-group">
+                    <label class="radio-item">
+                        <input type="radio" name="status" />
+                        <span>全て</span>
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="status" checked />
+                        <span>充分</span>
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="status" />
+                        <span>少ない</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- コンテンツエリア -->
+    <div class="content-area">
+        <!-- ページヘッダー -->
+        <div class="page-header">
+            <div>
+                <h1>デザインシステム</h1>
+                <p class="page-subtitle">コンポーネントと機能の完全なカタログ</p>
+            </div>
+            <Button Text="新規追加" Variant="primary" />
+        </div>
+
+        <!-- コンポーネントグリッド -->
+        <div class="components-grid">
+            <!-- ボタンセクション -->
+            <section class="component-card">
+                <div class="card-header">
+                    <h2>ボタンコンポーネント</h2>
+                </div>
+                <div class="card-content">
+                    <p class="section-description">様々なスタイルとバリエーション</p>
+                    <div class="button-showcase">
+                        <Button Text="プライマリ" Variant="primary" />
+                        <Button Text="セカンダリ" Variant="secondary" />
+                        <Button Text="危険操作" Variant="danger" />
+                        <Button Text="無効化" IsDisabled="true" />
+                    </div>
+                </div>
+            </section>
+
+            <!-- フォーム入力セクション -->
+            <section class="component-card">
+                <div class="card-header">
+                    <h2>フォーム入力</h2>
+                </div>
+                <div class="card-content">
+                    <p class="section-description">テキスト、数値、セレクト入力</p>
+                    <TextInput Label="商品名" 
+                               Placeholder="例：銅板A"
+                               Value="@productName"
+                               ValueChanged="@((v) => productName = v)"
+                               HelperText="商品の正式名称を入力してください" />
+                    <NumberInput Label="在庫数"
+                                 Value="@quantity"
+                                 ValueChanged="@((v) => quantity = v)"
+                                 Min="0"
+                                 Max="99999"
+                                 HelperText="最大在庫量を入力してください" />
+                </div>
+            </section>
+
+            <!-- ドロップダウン/セレクトセクション -->
+            <section class="component-card">
+                <div class="card-header">
+                    <h2>ドロップダウン選択</h2>
+                </div>
+                <div class="card-content">
+                    <p class="section-description">カテゴリとグループの選択</p>
+                    <SelectDropdown Label="カテゴリ"
+                                    SelectedValue="@selectedCategory"
+                                    SelectedValueChanged="@((v) => selectedCategory = v)"
+                                    Options="@categoryOptions"
+                                    Placeholder="カテゴリを選択" />
+                </div>
+            </section>
+
+            <!-- ステータスバッジセクション -->
+            <section class="component-card">
+                <div class="card-header">
+                    <h2>ステータスバッジ</h2>
+                </div>
+                <div class="card-content">
+                    <p class="section-description">在庫ステータスの表示</p>
+                    <div class="badge-showcase">
+                        <div class="badge-item">
+                            <Badge Text="✓ 充分" Variant="success" />
+                        </div>
+                        <div class="badge-item">
+                            <Badge Text="⚠ 少ない" Variant="warning" />
+                        </div>
+                        <div class="badge-item">
+                            <Badge Text="✗ 切れ" Variant="error" />
+                        </div>
+                        <div class="badge-item">
+                            <Badge Text="ℹ 情報" Variant="info" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- データテーブルセクション -->
+            <section class="component-card full-width">
+                <div class="card-header">
+                    <h2>在庫管理テーブル</h2>
+                </div>
+                <div class="card-content">
+                    <p class="section-description">在庫一覧と操作</p>
+                    <DataTable Title=""
+                               Columns="@tableColumns"
+                               Rows="@inventoryData"
+                               ShowActions="true"
+                               OnRowAction="@HandleRowAction" />
+                </div>
+            </section>
+
+            <!-- 状態表示セクション -->
+            <section class="component-card full-width">
+                <div class="card-header">
+                    <h2>入力値の確認</h2>
+                </div>
+                <div class="card-content">
+                    <p class="section-description">データバインディングのデモ</p>
+                    <div class="state-display">
+                        <div class="state-item">
+                            <span class="state-label">商品名</span>
+                            <span class="state-value">@(string.IsNullOrEmpty(productName) ? "未入力" : productName)</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-label">在庫数</span>
+                            <span class="state-value">@quantity</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-label">カテゴリ</span>
+                            <span class="state-value">@GetCategoryLabel(selectedCategory)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ===== ナビゲーション ===== */
+    .navbar {
+        background-color: #FFFFFF;
+        border-bottom: 1px solid #D1D5DB;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .navbar-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 var(--spacing-lg);
+        height: 60px;
+    }
+
+    .navbar-header {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-semibold);
+        color: #1F2937;
+    }
+
+    .navbar-logo {
+        font-size: 24px;
+    }
+
+    .navbar-title {
+        white-space: nowrap;
+    }
+
+    .navbar-menu {
+        display: flex;
+        gap: var(--spacing-lg);
+        flex: 1;
+        margin-left: var(--spacing-2xl);
+    }
+
+    .navbar-menu-item {
+        color: #6B7280;
+        text-decoration: none;
+        font-size: var(--font-size-base);
+        padding: 8px 0;
+        border-bottom: 2px solid transparent;
+        transition: all var(--transition-normal);
+    }
+
+    .navbar-menu-item:hover {
+        color: var(--color-primary);
+    }
+
+    .navbar-menu-item.active {
+        color: var(--color-primary);
+        border-bottom-color: var(--color-primary);
+    }
+
+    .navbar-user {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+    }
+
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: var(--color-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: var(--font-weight-semibold);
+        cursor: pointer;
+    }
+
+    /* ===== メインレイアウト ===== */
+    .main-layout {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 0;
+        min-height: calc(100vh - 60px);
+        background-color: #F9FAFB;
+    }
+
+    /* ===== サイドバー ===== */
+    .sidebar {
+        background-color: #FFFFFF;
+        border-right: 1px solid #D1D5DB;
+        padding: var(--spacing-lg);
+        overflow-y: auto;
+    }
+
+    .sidebar-header h3 {
+        margin: 0 0 var(--spacing-md) 0;
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+        color: #1F2937;
+    }
+
+    .sidebar-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+
+    .sidebar-section h4 {
+        margin: 0 0 var(--spacing-sm) 0;
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        color: #6B7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .checkbox-group, .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .checkbox-item, .radio-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        cursor: pointer;
+        font-size: var(--font-size-sm);
+        color: #1F2937;
+    }
+
+    .checkbox-item input, .radio-item input {
+        cursor: pointer;
+        width: 16px;
+        height: 16px;
+    }
+
+    /* ===== コンテンツエリア ===== */
+    .content-area {
+        padding: var(--spacing-2xl);
+        overflow-y: auto;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: var(--spacing-2xl);
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: var(--font-size-3xl);
+        font-weight: var(--font-weight-semibold);
+        color: #1F2937;
+    }
+
+    .page-subtitle {
+        margin: var(--spacing-sm) 0 0 0;
+        color: #6B7280;
+        font-size: var(--font-size-base);
+    }
+
+    /* ===== コンポーネントグリッド ===== */
+    .components-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: var(--spacing-lg);
+    }
+
+    .component-card {
+        background-color: #FFFFFF;
+        border: 1px solid #D1D5DB;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all var(--transition-normal);
+    }
+
+    .component-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border-color: #9CA3AF;
+    }
+
+    .component-card.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .card-header {
+        padding: var(--spacing-lg);
+        border-bottom: 1px solid #E5E7EB;
+        background-color: #F9FAFB;
+    }
+
+    .card-header h2 {
+        margin: 0;
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-primary);
+    }
+
+    .card-content {
+        padding: var(--spacing-lg);
+    }
+
+    .section-description {
+        margin: 0 0 var(--spacing-md) 0;
+        color: #6B7280;
+        font-size: var(--font-size-sm);
+    }
+
+    .button-showcase {
+        display: flex;
+        gap: var(--spacing-md);
+        flex-wrap: wrap;
+    }
+
+    .badge-showcase {
+        display: flex;
+        gap: var(--spacing-md);
+        flex-wrap: wrap;
+    }
+
+    .badge-item {
+        padding: var(--spacing-sm) 0;
+    }
+
+    .state-display {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-lg);
+    }
+
+    .state-item {
+        display: flex;
+        flex-direction: column;
+        padding: var(--spacing-md);
+        background-color: #F3F4F6;
+        border-radius: 6px;
+        border-left: 3px solid var(--color-primary);
+    }
+
+    .state-label {
+        font-size: var(--font-size-sm);
+        color: #6B7280;
+        font-weight: var(--font-weight-medium);
+        margin-bottom: 4px;
+    }
+
+    .state-value {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+        color: #1F2937;
+    }
+
+    /* ===== ユーティリティ ===== */
+    .p-lg { padding: var(--spacing-lg); }
+    .mt-lg { margin-top: var(--spacing-lg); }
+    .text-small { font-size: var(--font-size-sm); }
+    .text-muted { color: var(--color-text-secondary); }
+
+    /* ===== レスポンシブ ===== */
+    @@media (max-width: 768px) {
+        .main-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+            display: none;
+        }
+
+        .components-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .page-header {
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .navbar-menu {
+            display: none;
+        }
+    }
+</style>
+
+@code {
+    // テキスト入力
+    private string productName = "";
+
+    // 数値入力
+    private decimal quantity = 100m;
+
+    // ドロップダウン
+    private string selectedCategory = "";
+    private List<SelectDropdown.SelectOption> categoryOptions = new()
+    {
+        new SelectDropdown.SelectOption { Label = "金属製品", Value = "metal" },
+        new SelectDropdown.SelectOption { Label = "電子部品", Value = "electronic" },
+        new SelectDropdown.SelectOption { Label = "化学品", Value = "chemical" },
+        new SelectDropdown.SelectOption { Label = "その他", Value = "other" }
+    };
+
+    // テーブル
+    private List<DataTable.DataColumn> tableColumns = new()
+    {
+        new DataTable.DataColumn { Header = "商品ID", FieldName = "ProductId", Width = 12 },
+        new DataTable.DataColumn { Header = "商品名", FieldName = "ProductName", Width = 25 },
+        new DataTable.DataColumn { Header = "カテゴリ", FieldName = "Category", Width = 15 },
+        new DataTable.DataColumn { Header = "在庫数", FieldName = "Quantity", Width = 12, TextAlign = "right" },
+        new DataTable.DataColumn { Header = "ステータス", FieldName = "Status", Width = 20 }
+    };
+
+    private List<Dictionary<string, object>> inventoryData = new()
+    {
+        new Dictionary<string, object>
+        {
+            { "ProductId", "P001" },
+            { "ProductName", "銅板A" },
+            { "Category", "金属製品" },
+            { "Quantity", 250 },
+            { "Status", "✓ 在庫充分" }
+        },
+        new Dictionary<string, object>
+        {
+            { "ProductId", "P002" },
+            { "ProductName", "ニッケルコイル" },
+            { "Category", "金属製品" },
+            { "Quantity", 45 },
+            { "Status", "⚠ 在庫少" }
+        },
+        new Dictionary<string, object>
+        {
+            { "ProductId", "P003" },
+            { "ProductName", "マイクロチップB" },
+            { "Category", "電子部品" },
+            { "Quantity", 0 },
+            { "Status", "✗ 在庫切れ" }
+        },
+        new Dictionary<string, object>
+        {
+            { "ProductId", "P004" },
+            { "ProductName", "樹脂コーティング剤" },
+            { "Category", "化学品" },
+            { "Quantity", 120 },
+            { "Status", "✓ 在庫充分" }
+        }
+    };
+
+    private string GetCategoryLabel(string value)
+    {
+        var option = categoryOptions.FirstOrDefault(x => x.Value == value);
+        return option?.Label ?? "未選択";
+    }
+
+    private async Task HandleRowAction(Dictionary<string, object> row)
+    {
+        var productId = row["ProductId"];
+        // TODO: 編集画面へのナビゲーションなど
+        Console.WriteLine($"編集クリック: {productId}");
+    }
+}

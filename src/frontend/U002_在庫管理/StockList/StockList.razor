@@ -1,0 +1,62 @@
+@namespace InventoryManagement.Web.U002_StockManagement
+@page "/stocks"
+@using InventoryManagement.Web.U002_StockManagement.Models
+@using InventoryManagement.Web.U002_StockManagement.Services
+@inject StockApiClient StockApiClient
+
+<div class="page-header">
+    <h1>在庫一覧</h1>
+</div>
+
+@if (_errorMessage is not null)
+{
+    <p class="text-error">@_errorMessage</p>
+}
+
+<DataTable Columns="@_columns" Rows="@_rows" />
+
+@code {
+    private readonly List<DataTable.DataColumn> _columns = new()
+    {
+        new DataTable.DataColumn { Header = "商品コード", FieldName = "ProductCode" },
+        new DataTable.DataColumn { Header = "商品名", FieldName = "ProductName" },
+        new DataTable.DataColumn { Header = "在庫数量（kg）", FieldName = "Quantity", TextAlign = "right" },
+        new DataTable.DataColumn { Header = "単価（円/kg）", FieldName = "UnitPrice", TextAlign = "right" },
+        new DataTable.DataColumn { Header = "在庫金額（円）", FieldName = "StockValue", TextAlign = "right" },
+        new DataTable.DataColumn { Header = "在庫状態", FieldName = "Status" },
+    };
+
+    private List<Dictionary<string, object>> _rows = new();
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await StockApiClient.GetStocksAsync();
+        if (!result.IsSuccess)
+        {
+            _errorMessage = result.ErrorMessage;
+            return;
+        }
+
+        _rows = (result.Value ?? new List<StockDto>())
+            .Select(x => new Dictionary<string, object>
+            {
+                ["ProductCode"] = x.ProductCode,
+                ["ProductName"] = x.ProductName,
+                ["Quantity"] = x.Quantity.ToString("N3"),
+                ["UnitPrice"] = x.UnitPrice.ToString("N2"),
+                ["StockValue"] = x.StockValue.ToString("N0"),
+                ["Status"] = (RenderFragment)(builder =>
+                {
+                    if (x.Quantity == 0)
+                    {
+                        builder.OpenComponent<Badge>(0);
+                        builder.AddAttribute(1, "Text", "在庫なし");
+                        builder.AddAttribute(2, "Variant", "error");
+                        builder.CloseComponent();
+                    }
+                }),
+            })
+            .ToList();
+    }
+}

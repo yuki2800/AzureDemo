@@ -1,0 +1,39 @@
+@namespace InventoryDesignSystem.Components
+
+<button class="btn @CssClass" 
+        type="button" 
+        disabled="@IsDisabled"
+        @onclick="OnClick">
+    @if (!string.IsNullOrEmpty(Icon))
+    {
+        <span class="btn-icon">@Icon</span>
+    }
+    @Text
+</button>
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = "Button";
+
+    [Parameter]
+    public string? Icon { get; set; }
+
+    [Parameter]
+    public string Variant { get; set; } = "primary"; // primary, secondary, danger
+
+    [Parameter]
+    public bool IsDisabled { get; set; } = false;
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public string? AdditionalClass { get; set; }
+
+    private string CssClass => Variant switch
+    {
+        "secondary" => $"btn-secondary {AdditionalClass}",
+        "danger" => $"btn-danger {AdditionalClass}",
+        _ => $"btn-primary {AdditionalClass}"
+    };
+}

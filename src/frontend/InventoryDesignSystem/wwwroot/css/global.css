@@ -1,0 +1,279 @@
+/* =====================================
+   グローバルスタイル
+   ===================================== */
+
+/* ベーススタイル */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+}
+
+/* =====================================
+   ボタンスタイル
+   ===================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  border: var(--border-width-thin) solid transparent;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-normal);
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* プライマリボタン */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  border: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+  box-shadow: 0 2px 8px rgba(0, 169, 157, 0.15);
+}
+
+.btn-primary:active:not(:disabled) {
+  background-color: #00655F;
+  transform: scale(0.99);
+}
+
+/* セカンダリボタン */
+.btn-secondary {
+  background-color: #F3F4F6;
+  color: var(--color-text-primary);
+  border: 1px solid #D1D5DB;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #E5E7EB;
+  border-color: #9CA3AF;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ダンジャーボタン */
+.btn-danger {
+  background-color: var(--color-error);
+  color: var(--color-text-inverse);
+  border: none;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #C50F1F;
+  box-shadow: 0 2px 8px rgba(218, 59, 1, 0.15);
+}
+
+/* =====================================
+   入力フィールド
+   ===================================== */
+
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+select,
+textarea {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.1);
+}
+
+input[type="text"]:disabled,
+input[type="email"]:disabled,
+input[type="password"]:disabled,
+input[type="number"]:disabled,
+input[type="search"]:disabled,
+select:disabled,
+textarea:disabled {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.form-input.is-invalid,
+.form-select.is-invalid {
+  border-color: var(--color-error);
+}
+
+.form-input.is-invalid:focus,
+.form-select.is-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(218, 59, 1, 0.1);
+}
+
+/* =====================================
+   テーブル
+   ===================================== */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.table thead {
+  background-color: #FFFFFF;
+  border-bottom: var(--border-width-normal) solid #D1D5DB;
+}
+
+.table thead th {
+  padding: var(--spacing-md);
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.table tbody td {
+  padding: var(--spacing-md);
+  border-bottom: var(--border-width-thin) solid var(--color-border);
+}
+
+.table tbody tr:hover {
+  background-color: #F9FAFB;
+}
+
+/* =====================================
+   バッジ・ラベル
+   ===================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--border-radius-full);
+  white-space: nowrap;
+}
+
+.badge-success {
+  background-color: rgba(16, 124, 16, 0.1);
+  color: #107C10;
+}
+
+.badge-warning {
+  background-color: rgba(255, 185, 0, 0.1);
+  color: #FFB900;
+}
+
+.badge-error {
+  background-color: rgba(218, 59, 1, 0.1);
+  color: #DA3B01;
+}
+
+.badge-info {
+  background-color: rgba(0, 169, 157, 0.1);
+  color: #00A99D;
+}
+
+.badge-primary {
+  background-color: rgba(0, 169, 157, 0.1);
+  color: #00A99D;
+}
+
+.badge-neutral {
+  background-color: var(--color-neutral-200);
+  color: var(--color-text-primary);
+}
+
+/* =====================================
+   テキストユーティリティ
+   ===================================== */
+
+.text-muted {
+  color: var(--color-text-secondary);
+}
+
+.text-disabled {
+  color: var(--color-text-disabled);
+}
+
+.text-error {
+  color: var(--color-error);
+}
+
+.text-success {
+  color: var(--color-success);
+}
+
+.text-warning {
+  color: var(--color-warning);
+}
+
+.text-small {
+  font-size: var(--font-size-sm);
+}
+
+.text-large {
+  font-size: var(--font-size-lg);
+}
+
+/* =====================================
+   スペーシングユーティリティ
+   ===================================== */
+
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+
+.p-sm { padding: var(--spacing-sm); }
+.p-md { padding: var(--spacing-md); }
+.p-lg { padding: var(--spacing-lg); }

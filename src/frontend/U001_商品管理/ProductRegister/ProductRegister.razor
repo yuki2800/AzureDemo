@@ -1,0 +1,156 @@
+@namespace InventoryManagement.Web.U001_ProductManagement
+@page "/products/register"
+@using InventoryManagement.Web.U001_ProductManagement.Models
+@using InventoryManagement.Web.U001_ProductManagement.Services
+@inject ProductApiClient ProductApiClient
+@inject NavigationManager NavigationManager
+
+<div class="page-header">
+    <h1>商品登録</h1>
+</div>
+
+<TextInput Label="商品コード"
+           Placeholder="例：P0001"
+           Value="@_productCode"
+           ValueChanged="@OnProductCodeChanged"
+           ErrorMessage="@_productCodeError"
+           HelperText="1〜20文字の英数字で入力してください" />
+
+<TextInput Label="商品名"
+           Placeholder="例：銅板A"
+           Value="@_productName"
+           ValueChanged="@OnProductNameChanged"
+           ErrorMessage="@_productNameError"
+           HelperText="1〜100文字で入力してください" />
+
+<NumberInput Label="単価（円/kg）"
+             Value="@_unitPrice"
+             ValueChanged="@OnUnitPriceChanged"
+             Min="0"
+             Step="0.01m"
+             ErrorMessage="@_unitPriceError"
+             HelperText="0以上、小数点以下2桁で入力してください" />
+
+@if (_errorMessage is not null)
+{
+    <p class="text-error">@_errorMessage</p>
+}
+
+<Button Text="登録" Variant="primary" OnClick="@RegisterAsync" IsDisabled="@_isSubmitting" />
+
+@code {
+    private string _productCode = "";
+    private string _productName = "";
+    private decimal _unitPrice;
+    private string? _productCodeError;
+    private string? _productNameError;
+    private string? _unitPriceError;
+    private string? _errorMessage;
+    private bool _isSubmitting;
+
+    private void OnProductCodeChanged(string value)
+    {
+        _productCode = value;
+        _productCodeError = ValidateProductCode(value);
+    }
+
+    private void OnProductNameChanged(string value)
+    {
+        _productName = value;
+        _productNameError = ValidateProductName(value);
+    }
+
+    private void OnUnitPriceChanged(decimal value)
+    {
+        _unitPrice = value;
+        _unitPriceError = ValidateUnitPrice(value);
+    }
+
+    private static string? ValidateProductCode(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return "商品コードを入力してください。";
+        }
+
+        if (value.Length > 20)
+        {
+            return "商品コードは20文字以内で入力してください。";
+        }
+
+        if (!value.All(char.IsLetterOrDigit))
+        {
+            return "商品コードは英数字のみ使用できます。";
+        }
+
+        return null;
+    }
+
+    private static string? ValidateProductName(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return "商品名を入力してください。";
+        }
+
+        if (value.Length > 100)
+        {
+            return "商品名は100文字以内で入力してください。";
+        }
+
+        return null;
+    }
+
+    private static string? ValidateUnitPrice(decimal value)
+    {
+        if (value < 0)
+        {
+            return "単価は0以上で入力してください。";
+        }
+
+        if (Math.Round(value, 2) != value)
+        {
+            return "単価は小数点以下2桁までで入力してください。";
+        }
+
+        return null;
+    }
+
+    private async Task RegisterAsync()
+    {
+        _productCodeError = ValidateProductCode(_productCode);
+        _productNameError = ValidateProductName(_productName);
+        _unitPriceError = ValidateUnitPrice(_unitPrice);
+
+        if (_productCodeError is not null || _productNameError is not null || _unitPriceError is not null)
+        {
+            return;
+        }
+
+        _errorMessage = null;
+        _isSubmitting = true;
+        try
+        {
+            var request = new RegisterProductRequest
+            {
+                ProductCode = _productCode,
+                ProductName = _productName,
+                UnitPrice = _unitPrice,
+            };
+
+            var result = await ProductApiClient.RegisterProductAsync(request);
+            if (result.IsSuccess)
+            {
+                NavigationManager.NavigateTo("/products");
+            }
+            else
+            {
+                _errorMessage = result.ErrorMessage;
+            }
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

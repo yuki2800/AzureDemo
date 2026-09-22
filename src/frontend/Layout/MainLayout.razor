@@ -1,0 +1,65 @@
+@inherits LayoutComponentBase
+
+<div class="app-layout">
+    <aside class="app-sidebar">
+        <div class="app-sidebar-brand">📦 在庫管理システム</div>
+        <nav>
+            @foreach (var group in _navGroups)
+            {
+                <div class="nav-group">
+                    <button type="button" class="nav-group-title" @onclick="() => ToggleGroup(group.Id)">
+                        <span class="nav-group-toggle-icon">@(IsExpanded(group.Id) ? "▾" : "▸")</span>
+                        <span>@group.Title</span>
+                    </button>
+                    @if (IsExpanded(group.Id))
+                    {
+                        <div class="nav-group-links">
+                            @foreach (var link in group.Links)
+                            {
+                                <NavLink href="@link.Href" Match="@link.Match">@link.Text</NavLink>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </nav>
+    </aside>
+
+    <main class="app-content">
+        @Body
+    </main>
+</div>
+
+@code {
+    // ユースケース単位でナビゲーションの開閉状態を保持する
+    private readonly Dictionary<string, bool> _expandedGroups = new()
+    {
+        ["U001"] = true,
+        ["U002"] = true,
+    };
+
+    private readonly List<NavGroup> _navGroups = new()
+    {
+        new NavGroup("U001", "商品管理", new()
+        {
+            new NavLinkItem("商品一覧", "products", NavLinkMatch.All),
+            new NavLinkItem("商品登録", "products/register", NavLinkMatch.Prefix),
+        }),
+        new NavGroup("U002", "在庫管理", new()
+        {
+            new NavLinkItem("在庫一覧", "stocks", NavLinkMatch.All),
+            new NavLinkItem("入出庫登録", "stocks/transactions/register", NavLinkMatch.Prefix),
+        }),
+    };
+
+    private bool IsExpanded(string groupId) => _expandedGroups.TryGetValue(groupId, out var expanded) && expanded;
+
+    private void ToggleGroup(string groupId)
+    {
+        _expandedGroups[groupId] = !IsExpanded(groupId);
+    }
+
+    private sealed record NavGroup(string Id, string Title, List<NavLinkItem> Links);
+
+    private sealed record NavLinkItem(string Text, string Href, NavLinkMatch Match);
+}

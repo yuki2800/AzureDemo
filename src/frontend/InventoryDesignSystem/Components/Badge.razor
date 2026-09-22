@@ -1,0 +1,36 @@
+@namespace InventoryDesignSystem.Components
+
+<span class="badge @CssClass" title="@Tooltip">
+    @if (!string.IsNullOrEmpty(Icon))
+    {
+        <span class="badge-icon">@Icon</span>
+    }
+    @Text
+</span>
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = "Badge";
+
+    [Parameter]
+    public string? Icon { get; set; }
+
+    [Parameter]
+    public string Variant { get; set; } = "primary"; // primary, success, warning, error, info, neutral
+
+    [Parameter]
+    public string? Tooltip { get; set; }
+
+    [Parameter]
+    public string? AdditionalClass { get; set; }
+
+    private string CssClass => Variant switch
+    {
+        "success" => $"badge-success {AdditionalClass}",
+        "warning" => $"badge-warning {AdditionalClass}",
+        "error" => $"badge-error {AdditionalClass}",
+        "info" => $"badge-info {AdditionalClass}",
+        "neutral" => $"badge-neutral {AdditionalClass}",
+        _ => $"badge-primary {AdditionalClass}"
+    };
+}

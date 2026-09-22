@@ -1,0 +1,71 @@
+@namespace InventoryDesignSystem.Components
+
+<div class="form-group">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label for="@Id">@Label</label>
+    }
+    <select id="@Id" 
+            class="@CssClass"
+            disabled="@IsDisabled"
+            @onchange="OnValueChanged">
+        @if (!string.IsNullOrEmpty(Placeholder))
+        {
+            <option value="">@Placeholder</option>
+        }
+        @foreach (var item in Options)
+        {
+            <option value="@item.Value" selected="@(item.Value == SelectedValue)">
+                @item.Label
+            </option>
+        }
+    </select>
+    @if (!string.IsNullOrEmpty(HelperText))
+    {
+        <small class="text-muted">@HelperText</small>
+    }
+</div>
+
+@code {
+    private static int _idCounter = 0;
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    [Parameter]
+    public string SelectedValue { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> SelectedValueChanged { get; set; }
+
+    [Parameter]
+    public List<SelectOption> Options { get; set; } = new();
+
+    [Parameter]
+    public bool IsDisabled { get; set; } = false;
+
+    [Parameter]
+    public string? HelperText { get; set; }
+
+    [Parameter]
+    public string? AdditionalClass { get; set; }
+
+    private string Id { get; } = $"select-{++_idCounter}";
+
+    private string CssClass => $"form-select {AdditionalClass}";
+
+    private async Task OnValueChanged(ChangeEventArgs e)
+    {
+        SelectedValue = e.Value?.ToString() ?? "";
+        await SelectedValueChanged.InvokeAsync(SelectedValue);
+    }
+
+    public class SelectOption
+    {
+        public string Label { get; set; } = "";
+        public string Value { get; set; } = "";
+    }
+}
