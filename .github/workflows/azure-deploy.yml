@@ -65,6 +65,7 @@ jobs:
           --type zip
 
     # 8. backend を /api 仮想アプリケーション（site\wwwroot\api-app）へデプロイ
+    # frontend側のプログラムが削除されないように、--clean false(洗い替えOFF)を設定
     - name: Deploy backend to /api virtual application
       run: |
         az webapp deploy `
@@ -73,6 +74,7 @@ jobs:
           --src-path "${{ runner.temp }}/backend.zip" `
           --type zip `
           --target-path "${{ env.API_TARGET_PATH }}"
+          --clean false
 
     - name: Azure Logout
       if: always()
