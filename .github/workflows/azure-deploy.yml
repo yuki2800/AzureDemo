@@ -29,7 +29,18 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    # 3. frontend (Blazor WASM) のビルド・publish → App Serviceのルートに配置
+    # 3. 自動テスト実行 + カバレッジ50%未満ならワークフローを失敗させる
+    - name: Run tests with coverage threshold
+      run: |
+        dotnet test test/InventoryManagement.Api.Tests/InventoryManagement.Api.Tests.csproj `
+          -c Release `
+          /p:CollectCoverage=true `
+          /p:CoverletOutputFormat=cobertura `
+          /p:Threshold=50 `
+          /p:ThresholdType=line%2cbranch%2cmethod `
+          /p:ThresholdStat=total
+
+    # 4. frontend (Blazor WASM) のビルド・publish → App Serviceのルートに配置
     - name: Publish frontend (Blazor WASM)
       run: |
         dotnet restore src/frontend/InventoryManagement.Web.csproj
@@ -40,7 +51,7 @@ jobs:
       run: |
         Compress-Archive -Path "${{ runner.temp }}/frontend/*" -DestinationPath "${{ runner.temp }}/frontend.zip"
 
-    # 6. Azure へログイン（federated credentialによるOIDC認証）
+    # 7. Azure へログイン（federated credentialによるOIDC認証）
     - name: Azure Login
       uses: azure/login@v2
       with:
@@ -48,7 +59,7 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    # 7. frontend を App Service のルート（site\wwwroot）へデプロイ
+    # 8. frontend を App Service のルート（site\wwwroot）へデプロイ
     - name: Deploy frontend to App Service root
       run: |
         az webapp deploy `
