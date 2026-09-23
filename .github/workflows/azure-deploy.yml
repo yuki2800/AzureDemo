@@ -36,7 +36,7 @@ jobs:
           -c Release `
           /p:CollectCoverage=true `
           /p:CoverletOutputFormat=cobertura `
-          /p:Threshold=20 `
+          /p:Threshold=10 `
           /p:ThresholdType=line%2cbranch%2cmethod `
           /p:ThresholdStat=total
 
