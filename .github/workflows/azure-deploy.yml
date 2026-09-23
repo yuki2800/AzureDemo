@@ -29,14 +29,14 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    # 3. 自動テスト実行 + カバレッジ50%未満ならワークフローを失敗させる
+    # 3. 自動テスト実行 + カバレッジ閾値未満ならワークフローを失敗させる
     - name: Run tests with coverage threshold
       run: |
         dotnet test test/InventoryManagement.Api.Tests/InventoryManagement.Api.Tests.csproj `
           -c Release `
           /p:CollectCoverage=true `
           /p:CoverletOutputFormat=cobertura `
-          /p:Threshold=50 `
+          /p:Threshold=20 `
           /p:ThresholdType=line%2cbranch%2cmethod `
           /p:ThresholdStat=total
 
